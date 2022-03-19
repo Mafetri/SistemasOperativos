@@ -1,0 +1,24 @@
+        TRABAJO PRACTICO N0
+======================================================
+1)
+	int a; (Enteros)
+	char a; (Caracteres, alamcena ints)
+	long a; (entero largo)
+	float a; (punto flotante)
+	double a; (punto flotante doble precision)
+	short a; (entero corto)
+	unsigned a; (Sin signo, para char, int, long)
+	
+	
+4)
+	Una va a mostrar por pantalla el numero entero del char a, mientras que la otra muestra el numero en si
+	El valor numerico de a es 77
+	
+7)
+	integer a, no existe integer, deberia usarse int
+	long float,
+	unsigned float,
+	char 2j, no se pude usar un numero como primer caracter de nombre de variable
+	float ancho, alto, long: no se puede usar la palabra long
+	bool i: no existe
+	
