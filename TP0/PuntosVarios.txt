@@ -60,10 +60,13 @@
   		printf("%d\n", 10%3); deberia dar 3 pero da 1
   		printf("%d\n", 3.1416); Da raro porque el 3.14 es float, y al pasarlo a double su representacion es distitna
   		printf("%f\n", (double)20/3); = 6.66667 ya que pasar de double a float no genera problema
- 		printf("%f\n", (int)3.1416);
- 		printf("%d\n", (int)3.1416);
+ 		printf("%f\n", (int)3.1416); 3.1416 a int queda 3, pero al mostrar 3 como float, se imprime 6.666667
+ 		printf("%d\n", (int)3.1416); = 3, misma razon que arriba pero int a double queda igual
+------------------------------------------------------ 
+11)
+	Hubo overflow y el numero maximo alcanzado es de 1410065400
+------------------------------------------------------ 
 
-	
 	
 	
 	
