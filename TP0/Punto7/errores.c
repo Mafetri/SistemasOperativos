@@ -1,5 +1,5 @@
 main(){
-	integer a;
+    integer a;
     short i,j,k;
     long float (h);
     double long d3;

@@ -1,0 +1,86 @@
+======================================================
+               TRABAJO PRACTICO N0
+======================================================
+0) Codigo relaizado en carpeta Punto0
+------------------------------------------------------	
+1)
+	int a; (Enteros)
+	char a; (Caracteres, alamcena ints)
+	long a; (entero largo)
+	float a; (punto flotante)
+	double a; (punto flotante doble precision)
+	short a; (entero corto)
+	unsigned a; (Sin signo, para char, int, long)
+
+------------------------------------------------------	
+4)
+	Una va a mostrar por pantalla el numero entero del char a (este caso el 77), 
+	Mientras que la otra muestra el char (este caso la M)
+------------------------------------------------------
+7)
+	integer a, no existe integer, deberia usarse int
+	long float, no se puede usar long con float
+	unsigned float, no se puede usar el unsigned con float.
+	char 2j, no se pude usar un numero como primer caracter de nombre de variable
+	float ancho, alto, long: no se puede usar la palabra long
+	bool i: no existe
+
+------------------------------------------------------  
+8) Realizado en la carpeta Punto8.
+
+------------------------------------------------------  
+9) Realizado en la carpeta Punto9.
+
+------------------------------------------------------  
+10)
+	a)
+		En C, la / devuelve el tipo de uno o ambos de los involucrados, en este caso como a y b son ints, entonces
+		a/b va a dar un int, tomando el cociente y desechando el resto. Por lo tanto r=5/2 => r=2. Para corregirlo
+		hay que hacer que uno de los dos o ambos (a, b) sean float o double.
+	
+	b)	
+		Va a dar seguramente error porque como a y b son ints, al dividirlos va a dar 0, cociente(a,b) = 0, a = 1, b = 2.
+		Entonces c es 0, por lo tanto a/c = 1/0 lo cual es imposible
+	
+	c)
+		printf("%d\n", 20/3);
+		Esto va a dar 6, porque 20 es entero y 3 es entero por lo tanto se queda con el cociente y lo muesta tal cual.
+		
+    		printf("%f\n", 20/3);
+		Esto va a dar 0, ya que como mencione antes, 20/3 es 6, pero al intentar representarlo como float va a dar 0 ya que es un numero muy chico para la cantidad de bits que representa un float													
+   		printf("%f\n", 20/3.);
+		Va a dar 6.666 periodico porque el 3 es flotante, y entero/flotante = flotante
+  		
+		printf("%d\n", 10%3); 
+		Va a dar 1, ya que el resto de 10/3 es 1
+
+  		printf("%d\n", 3.1416); 
+		Va a dar un valor raro porque el 3.14 es float, y al reprecentarlo como decimal su representacion es distitna
+  		
+		printf("%f\n", (double)20/3);
+		Va a dar 6.66667, ya que al pasar a 20 a dobule, 20.0/3 da un punto flotante y va a ser representado como tal.
+
+ 		printf("%f\n", (int)3.1416); 
+		Pensaba que iba a dar 0, como en uno de los anteriores, ya que al intentar representar un integer como float seria tan chico que seria 0, pero termino dando 6.6666 periodico no sabria porque.
+
+ 		printf("%d\n", (int)3.1416); 
+		Va a dar 3, ya que al pasar un float a integer se toma la parte entera, en este caso el 3.
+
+------------------------------------------------------ 
+12) Realizado en la carpeta Punto12.
+	
+------------------------------------------------------ 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+		
+

@@ -36,13 +36,7 @@
 	char 2j, no se pude usar un numero como primer caracter de nombre de variable
 	float ancho, alto, long: no se puede usar la palabra long
 	bool i: no existe
-------------------------------------------------------
-8)
-	Hay algo raro, en mi PC de 64 bits, el int vale 4 bytes (32bits) segun el sizeof(int).									!!!!!
------------------------------------------------------- 
-9)
-	Hay algo raro, el unsiged char en vez de ser de 1 byte es de 4 bytes, mientras que char solo es de 1 byte						!!!!!
------------------------------------------------------- 
+------------------------------------------------------  
 10)
 	a)
 		En C, la / devuelve el tipo de uno o ambos de los involucrados, en este caso como a y b son ints, entonces
