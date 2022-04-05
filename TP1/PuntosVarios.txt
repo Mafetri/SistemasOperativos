@@ -12,10 +12,11 @@ system
 
 4) 
 	a) El programa imprime por terminal A y B hasta que se queda sin memoria 	
-	b) Se puede lograr haciendo un sleep del proceso para que se libere la CPU y poder ejecutar el otro proceso. O sino, se puede modificar el quantum del sistema operativo para que cambie entre procesos mas rapido o mas lento.
+	b) Se puede lograr haciendo un sleep del proceso para que se libere la CPU y poder ejecutar el otro proceso. O sino, se puede modificar el quantum del sistema operativo (en el caso de Xinu en el archivo include/kernell.h)para que cambie entre procesos mas rapido o mas lento.
 
 8) 
-	El mas facil en mi opinion, y supongo que la de varios, es Linux, ya que no necesita ningun parametro para poder crear hijos. Ahora, esto no necesariamente significa que Linux sea mas facil de entedender, ya que todo lo que en Xinu se pasa por parametro al crear un hijo, el Linux ya estan predefinidos, por lo tanto no es facil el saber que realmente se esta haciendo al crear un hijo, esto a su vez hace que sea mas "elegante" ya que permite que se pueda definir todo a la hora de la hacer el programa.
+	El mas facil en mi opinion, y supongo que la de varios, es Linux, ya que no necesita ningun parametro para poder crear hijos. 
+	Ahora, esto no necesariamente significa que Linux sea mas facil de entender, ya que todo lo que en Xinu se pasa por parametro al crear un hijo, el Linux ya estan predefinidos, por lo tanto no es facil el saber que realmente se esta haciendo al crear un hijo, esto a su vez hace que sea mas "elegante" ya que permite que se pueda definir todo a la hora de la hacer el proceso.
 
 9) 
 	La tabla de procesos:
@@ -32,7 +33,12 @@ system
 		-int16 prdesc[NDESC] 	-> Desripcion del dispositivo para el proceso
 	Lo que le falta es el estado de los registros de la CPU, para esto utiliza la pila pero no esta en la tabla como tal.
 
-10) Usar control(0, TC_MODER, 0, 0) en vez del system del modo raw
+10) 
+	Tuve que cambiar el metodo main().
+	Incluir la libreria de xinu.h
+	El %i del printf no funciona, lo reemplacé por el %d.
+	Las tildes en Xinu parecen no funcionar (al igual que la ñ), las tuve que sacar.
+	Usar control(0, TC_MODER, 0, 0) en vez del system del modo raw.
 
 
 
