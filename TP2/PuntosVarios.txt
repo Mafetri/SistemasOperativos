@@ -1,0 +1,15 @@
+================================================
+	TRABAJO PRACTICO N2
+================================================
+
+1)
+	a. El planificador de procesos, selecciona el proceso con mayor prioridad, y entre procesos con la misma prioridad es de tipo "round-robin" donde se utiliza el quantum para iterar entre procesos listos.
+
+	c. No funcionaria porque la llamada al sistema consumiria tiempo, entonces para cuando el proceso vuelva a tomar cpu, le va a quedar poco tiempo de rafaga porque el planificador seguia "consumiendo" los milisegundos de su sleep por mas que el proceso en si no estaba todo el rato en cpu.
+
+2)
+	b. El programa no funciona como corresponde ya que el proceso del productor no esta sincronizado con el de consumidor, entoncuaces imprime por pantalla n=0 hasta que termina el for del consumidor y despues el productor empieza su loop para producir.
+
+3)
+	a. Pasa lo mismo que en el punto 2, cuando el operador hace el primer IF da true y entra, pero cuando intenta hacer el otro IF el valor de ¨y¨ ya no es multiplo de 10 porque el proceso incrementar tomo cpu e incremento el x, por lo tanto el segundo IF da true e imprime el mensaje de error.
+	Para solucionarlo se pueden usar semaforos como en el punto 2 o hacer metodos mutex como en el siguiente punto. 		
