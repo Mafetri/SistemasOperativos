@@ -13,3 +13,40 @@
 3)
 	a. Pasa lo mismo que en el punto 2, cuando el operador hace el primer IF da true y entra, pero cuando intenta hacer el otro IF el valor de ¨y¨ ya no es multiplo de 10 porque el proceso incrementar tomo cpu e incremento el x, por lo tanto el segundo IF da true e imprime el mensaje de error.
 	Para solucionarlo se pueden usar semaforos como en el punto 2 o hacer metodos mutex como en el siguiente punto. 		
+
+4)
+
+Windows desde XP hasta la actualidad, posee un gestor de procesos (llamado "dispatcher" en el kernel) el cual gestiona los procesos usando un sistema basado en prioridad, ejecutanto asi el proceso de mayor prioridad primero hasta que termine, hasta que otro proceso que tenga mas prioridad este listo, hasta que su tiempo de quantum termine o hasta una llamada al sistema bloquante (por ejemplo de entrada/salida).
+El "dispacher" posee 32 niveles para determinar el orden de ejecucion.
+Las prioridades se dividen en dos clases:
+	- Variables: las cuales tienen prioridades de 0 a nivel 15
+	- Tiempo Real: las cuales tienen prioridades de 16 a 31
+El "dispatcher" usa una cola para cada prioridad y las recorre desde la mas alta a la mas baja hasta encontrar un proceso que este listo para ejecutarse, si no encuentra ninguno, se ejecuta un proceso nulo llamado "idle thread".
+Hay una relacion entre el numero del nivel de prioriodad y la API Win32. Este ultimo identifica las siguientes 6 clases de prioridad a la cual un proceso puede pertenecer contando con un minimo de nivel de prioridad cada una:
+	- IDLE_PRIORITY_CLASS (Min 4)
+	- BELOW_NORMAL_PRIORITY_CLASS (Min 6)
+	- NORMAL_PRIORITY_CLASS (Min 8)
+	- ABOVE_NORMAL_PRIORITY_CLASS (Min 10)
+	- HIGH_PRIORITY_CLASS (Min 13)
+	- REALTIME_PRIORITY_CLASS (Min 24)
+Los procesos son tipicamente miembros de la NORMAL_PRIORITY_CLASS, pero la prioridad de los procesos puede ser cambiada mediente una funcion, exceptuando aquellos que pertenezcan a la REALTIME_PRIORITY_CLASS.
+Ademas, existe la prioridad relativa, las cuales son:
+	- IDLE
+	- LOWEST
+	- BELOW NORMAL
+	- NORMAL
+	- ABOVE NORMAL
+	- HIGHEST
+	- TIME CRITICAL
+Por lo tanto, la prioridad final de cada proceso se basa en una relacion entre ambas prioridades, la relativa y la clase. La tabla de relacion se encuentra en la Pagina 240 del libro Operating System Concepts.
+Ahora la parte practica: 
+	- Cuando a un proceso se le acaba su quantum, es interrumpido por el sistema operativo, si el proceso pertenece a las clases variables de prioridad, entonces se le reduce su prioridad (hasta un minimo de la base de la clase perteneciente), esto es asi ya que de esta manera se tiende a limitar el consumo de la CPU por parte de procesos de calculo intensivo ("compute-bound").
+	- Cuando un proceso (de prioridad variable) sale de un estado de espera ("wait") el "dispatcher" incrementa su prioridad, dicho incremento dependera de cuanto tiempo el proceso haya estado esperando. Este aumento de prioridad dependera del porque el proceso estaba esperando, si es era por E/S aumentara de forma significativa, mientras que por ejemplo era una espera por operacion de disco aumentara moderadamente. Esta estrategia tiende a dar buen tiempo de respuesta para procesos interactivos que utilicen el mouse e interfaz. A su vez, tambien permite que los procesos limitados por E/S mantener ocupados los dispositivos de E/S, al mismo tiempo que los procesos de calculo utilicen en segundo plano ciclos de CPU libres. Ademas, la prioridad de las ventanas con las cuales el usuario este interactuando tambien aumentan su prioridad, logrando asi un mejor tiempo de respuesta.
+	- Cuando un usuario esta ejecuntando programas interactivos, Windows distingue entre procesos en primer plano y en segundo plano (el cual no esta siendo seleccionado); cuando un proceso se mueve al primer plano, se aumenta su quantum por un factor, usualmente por 3.
+	- Con Windows 7 se implemento el User-mode scheduling (UMS) el cual es un mecanismo que permite a las aplicaciones puedan administrar sus propios procesos sin que el gestor de procesos de windows intervenga. (Esto ya no es soportado en las nuevas versiones como W11).
+	- Ademas, Windows soporta la gestion en sistemas con multiprocesadores, asignando a un proceso el "core" de la CPU mas optimo para dicho proceso.
+
+
+Linux usa a partir de su version 2.6.23 de kernel un gestor de procesos llamado Compleately Fair Scheduler (CFS) y Virtual Runtime.
+	- Virtual Runtime: tiempo de ejecucion pura de un proceso (sin contar ningun tipo de bloqueo/espera) que ha pasado utilizando CPU corregido con prioridad llamada valor "nice", el cual va de -20 a +19, resultando el menor numero el de mayor "prioridad".
+	- CFS: Este algoritmo, para almacenar los procesos listos para ejecutar, utiliza un arbol AVL con un orden de O(log N), donde N es la cantidad de procesos. Y la clave de ordenamiento es el tipo virtual de un proceso. El proceso proximo a ejecutar estará en la parte izquierda del arbol ya que siempre será el proceso con menor virtual runtime (vruntime). Por lo tanto, un proceso nuevo, va a tener un vruntime minimo y de esa forma se ubicaria a la izquierda del arbol haciendo que sea proximo a ser ejecutado.

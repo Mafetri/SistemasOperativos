@@ -1,0 +1,7 @@
+main(){	int a = 100000;
+	for(int i = 0; i < 100000; i++){
+		a = a + 100000;
+	}
+	printf("Hola %i \n",a);
+	printf("100000x100000 es igual a: %i \n", 100000*100000);
+}
