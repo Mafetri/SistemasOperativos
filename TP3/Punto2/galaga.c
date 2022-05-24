@@ -249,18 +249,26 @@ int shipPosition(struct Players *player, int *shots, int *curr_shot){
 
 // ===== Enemies Position Process ======
 int enemies(struct Enemy *easyEnemies, struct Enemy *hardEnemies, struct FastEnemy fast, int pidCollisions, int *shots){
-	int enemyDestroyed = -1;
+	int *thingsDistroyed, msg;
+
 	while(1){
 		// ----- Checks Collision -----
 		// Shots
-		enemyDestroyed = receive();
-
-		wait(semEnemies);
-		if(enemyDestroyed != -1){
-			drawRect(easyEnemies[enemyDestroyed].enemyX, easyEnemies[enemyDestroyed].enemyY,  20, 20, BLACK);
-			easyEnemies[enemyDestroyed].enemyY = 0;
+		msg = recvclr();
+		if(msg != OK){
+			thingsDistroyed = (int*)msg;
+			
+			wait(semEnemies);
+			drawRect(easyEnemies[*thingsDistroyed].enemyX, easyEnemies[*thingsDistroyed].enemyY,  20, 20, BLACK);
+			easyEnemies[*thingsDistroyed].enemyY = 0;
 			signal(semEnemies);
+
+			wait(semShot);
+			drawRect((shots[*(thingsDistroyed + 1)] % 240), (shots[*(thingsDistroyed + 1)] / 240)+4, 5, 5, BLACK);
+			shots[*(thingsDistroyed + 1)] = 0;
+			signal(semShot);
 		}else{
+			wait(semEnemies);
 			// ----- Draw Enemies -----
 			// Easy enemies with downward movement
 			for (int a = 0; a < 9; a++) {
@@ -315,10 +323,9 @@ int enemies(struct Enemy *easyEnemies, struct Enemy *hardEnemies, struct FastEne
 
 // ===== Collisions Process ======
 int collisions(int pidEnemies, int pidShipPosition, int pidPlayer, int pidScore, struct Players *player, struct Enemy *easyEnemies, struct Enemy *hardEnemies, struct FastEnemy fast, int *shots) {
-	int shipDestroyed;
+	int thingsDistroyed[2];
 	while(1){
 		// ------ Ships and shots -----
-		shipDestroyed = -1;
 		// Check each shot
 		wait(semShot);
 		for (int i = 0; i < N_SHOTS; i++) {
@@ -326,18 +333,18 @@ int collisions(int pidEnemies, int pidShipPosition, int pidPlayer, int pidScore,
 			wait(semEnemies);
 			for (int j = 0; j < 9; j++) {
 				if (collision(easyEnemies[j].enemyX, easyEnemies[j].enemyY, 15, 15, shots[i] % 240, shots[i] / 240)) {
-					shipDestroyed = j;
-					// Delete the shot
-					drawRect((shots[i] % 240), (shots[i] / 240)+4, 5, 5, BLACK);
-					shots[i] = 0;
+					thingsDistroyed[0] = j;
+					thingsDistroyed[1] = i;
+
+					// Warns enemies process that an enemy and shot have been destroyed
+					send(pidEnemies, thingsDistroyed);
+
 					send(pidScore, SHOT_SCORE);
 				}
 			}
 			signal(semEnemies);
 		}
 		signal(semShot);
-		// Warns enemies process that a ship may has been destroyed
-		send(pidEnemies, shipDestroyed);
 
 		// ----- Player Collision -----
 		wait(semPlayer);
@@ -441,9 +448,6 @@ void endGame(int pid) {
 			// If wants to start again, a new process of gallaga is created
 			resume(create(galaga, 1024, 20, "galaga", 0));
 			// And this last process dies
-			break;
-		} else {
-			// Other key pressed, die
 			break;
 		}
 	}
