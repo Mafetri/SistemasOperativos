@@ -53,9 +53,11 @@ devcall	kbdinit (
 	// Keyboard buffer initialization
 	Kb_data.kbhead = 0;
 	Kb_data.kbtail = 0;
-	if ( (Kb_data.kbhead = semcreate(0)) == SYSERR ) {
+	if ( (Kb_data.kbbuffsem = semcreate(0)) == SYSERR ) {
 		panic("Cannot create keyboard buffer semaphore");
 	}
+	
+	
 	
 	byte _status;  //unsigned char
 

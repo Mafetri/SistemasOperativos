@@ -14,5 +14,7 @@ devcall	kbdclose (
 	if(Kb_data.pid_mutex == getpid()){
 		Kb_data.pid_mutex = 0;
 		signal(Kb_data.kb_mutex);
+	}else{
+		return SYSERR;
 	}
 }
