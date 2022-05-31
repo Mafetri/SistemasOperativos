@@ -124,10 +124,10 @@ int galaga(void) {
 
 	// Start the game?
 	unsigned char button;
-	while(1) {
-		(void *)kbdopen(3, 0, 0);
-		(void *)kbdread(3, &button, 1);
-		(void *)kbdclose(3);
+	while(1){
+		open(KEYBOARD, 0, 0);
+		button = getc(KEYBOARD);
+		close(KEYBOARD);
 		if (button == BUTTON_START) {
 			break;
 		}
@@ -173,9 +173,9 @@ int galaga(void) {
 int input(int pidShipPosition){
 	unsigned char button;
 	while(1){
-		(void *)kbdopen(3, 0, 0);
-		(void *)kbdread(3, &button, 1);
-		(void *)kbdclose(3);
+		open(KEYBOARD, 0, 0);
+		button = getc(KEYBOARD);
+		close(KEYBOARD);
 
 		//Go back to title screen if select button is pressed
 		if (button == BUTTON_SELECT) {
@@ -455,10 +455,10 @@ void endGame(int pid) {
 	// Start Game Over State
 	drawImage3(0, 0, 240, 160, gameover);
 	drawHollowRect(0, 0, 240, 160, WHITE);
-	while(1) {
-		(void *)kbdopen(3, 0, 0);
-		(void *)kbdread(3, &button, 1);
-		(void *)kbdclose(3);
+	while(1){
+		open(KEYBOARD, 0, 0);
+		button = getc(KEYBOARD);
+		close(KEYBOARD);
 		if (button == (BUTTON_SELECT) || button == (BUTTON_START)) {
 			// If wants to start again, a new process of gallaga is created
 			resume(create(galaga, 1024, 20, "galaga", 0));
