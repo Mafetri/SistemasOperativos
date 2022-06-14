@@ -1,0 +1,67 @@
+Usamem Version 1:
+for (j=0; j<BSIZE; j++) {
+    for (i=0; i<N; i++) {
+        *(pp+i*BSIZE+j) = 2; // pp[i][j] = 2;
+    }
+}
+
+Usamem Version 2:
+for (i = 0; i < N; i++)
+{
+    for (j = 0; j < BSIZE; j++)
+    {
+        *(pp + i * BSIZE + j) = 2; // pp[i][j] = 2;
+    }
+}
+
+Usamem Version 3:
+for (k = 0; k < BSIZE / SMALL; k++)
+{
+    for (i = 0; i < N; i++)
+    {
+        for (j = 0; j < SMALL; j++)
+        {
+            *(pp + i * BSIZE + (SMALL * k + j)) = 2; // pp[i][SMALL*k+j] = 2;
+        }
+    }
+}
+
+1. Tiempos de Ejecucion:
+    Version 2:
+        real    0m5,736s
+        user    0m5,412s
+        sys     0m0,316s
+
+    Version 3:
+        real    0m9,499s
+        user    0m9,136s
+        sys     0m0,320s
+===================================================
+2. 
+    -> La cache TLB (lookaside buffer) es un buffer de traduccion anticipada de direcciones virtuales a fisicas en la cual se almacenan pocas direcciones (las utlizadas recientemente) para reducir el tiempo de busqueda de la direccion fisica en la tabla de pagina del proceso.
+
+    -> La cache del procesador son un conjunto de buffers con una velocidad de lectura muy superior a la de la memoria RAM, pero con una capacidad de almacenamiento muy reducida en la cual se almacenan los datos consultados a la RAM para una rapido acceso futuro
+===================================================
+3.
+    Performance counter stats for './usamem':
+        1.037.298.342      dTLB-store-misses                                           
+        1.060.143.075      cache-misses                                                
+        25,577541807 seconds time elapsed
+
+    Performance counter stats for './usamem2':
+        1.626.850      dTLB-store-misses                                           
+        17.639.950      cache-misses                                                
+        5,770459449 seconds time elapsed
+
+    Performance counter stats for './usamem3':
+        276.069.315      dTLB-store-misses                                           
+        288.017.425      cache-misses                                                
+        10,617876177 seconds time elapsed
+    
+    1. La version original es la version que tiene un peor rendimiento, esto se debe a que al tener mas fallos de cache y TLB, el procesador debe consultar mas veces a la memoria (la cual es mucho mas lentas que las cache) tanto informacion solicitada por el proceso como las TP para las traducciones de direcciones logicas a fisicas.
+    2. El mejor rendimiento lo tiene la version 1, ya que el accede a todas las posiciones de memoria de una misma pagina una sola vez, osea que un for recorre por completo una pagina (ya cargada en la cache) y el for mas de arriba recorre cada pagina. En cambio, la version 1, recorre de a pedacitos cada pagina, haciendo que tenga que pedir a memoria muchas veces informacion para la misma pagina.
+    3. La de mejor rendimiento recorre una pagina por completo cada vez que quiere acceder a una, mientras que la de rendimiento medio "divide" en 4 cada pagina y termina accediendo a ella 4 veces, en vez de la millonada cantidad de veces de la de menor rendimiento.
+
+    Aclaracion: la cantidad de veces que se accede a la misma pagina reduce el rendimiento ya que al ser tanta cantidad de paginas las que se tienen que abrir hasta poder volver a abrir la misma hace que la cache se llene de paginas, y cuando quiere volver a abrir la misma pagina esta ya no se encuentra en la cache por falta de espacio.
+
+    Google Sheet con el diagrama de recorrido: https://docs.google.com/spreadsheets/d/1VYmWbhIz09DNTQqcqUkwBGMqJX0M5TFIgCl5bZOrq_4/edit?usp=sharing

@@ -1,0 +1,33 @@
+a.  El programa solicita: 240000*4096 = 983.040.000
+b.  El time da: 
+        Real: 36,360s
+        User: 29,632s
+        Sys:  0,532s
+c.  El puntero pp se almacena en el segmento de Uninitialized Data (bss)
+    Las variables i,j,k se almacenan en la Stack.
+
+d.  La memoria reservada se encuentra en heap. Malloc usa los systemcalls mmap, munmap y sbrk.
+
+e.  printf("Direcciones de: \n -> Main: 0x%x \n -> i: 0x%x \n -> j: 0x%x \n", &main, &i, &j);
+    Main: 0x400aae 
+    i: 0x7ffea3c9280c 
+    j: 0x7ffea3c92808   
+
+f.
+    Codigo:             00400000-004b2000           (Ocupa 0xB2000 o 729.088 bytes)
+    Data:               006b1000-006b4000           (Ocupa 0x3000 o 12.288 bytes)
+    Uninitialized Data: 006b4000-006b6000           (Ocupa 0x2000 o 8.192 bytes)
+    Heap:               02210000-02233000           (Ocupa 0x23000 o 143.360 bytes)
+    Malloc:             7f1b98b28000-7f1bd34a9000   (Ocupa 0x3A981000 o 983.044.096 bytes)
+    Stack:              7ffc03578000-7ffc03599000   (Ocupa 0x21000 o 135.168 bytes)
+
+    Lo devuelto por el cat /proc/PID/maps: 
+        00400000-004b2000 r-xp 00000000 00:2c 10323658768                        /export/home/manuel.trinanes/Documentos/SO1/TrabajosPracticos/TP4/Punto1/usamem
+        006b1000-006b4000 rw-p 000b1000 00:2c 10323658768                        /export/home/manuel.trinanes/Documentos/SO1/TrabajosPracticos/TP4/Punto1/usamem
+        006b4000-006b6000 rw-p 00000000 00:00 0 
+        02210000-02233000 rw-p 00000000 00:00 0                                  [heap]
+        7f1b98b28000-7f1bd34a9000 rw-p 00000000 00:00 0 
+        7ffc03578000-7ffc03599000 rw-p 00000000 00:00 0                          [stack]
+        7ffc035e1000-7ffc035e3000 r--p 00000000 00:00 0                          [vvar]
+        7ffc035e3000-7ffc035e5000 r-xp 00000000 00:00 0                          [vdso]
+        ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall] 
