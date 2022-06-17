@@ -6,25 +6,22 @@ for (j=0; j<BSIZE; j++) {
 }
 
 Usamem Version 2:
-for (i = 0; i < N; i++)
-{
-    for (j = 0; j < BSIZE; j++)
-    {
+for (i = 0; i < N; i++) {
+    for (j = 0; j < BSIZE; j++) {
         *(pp + i * BSIZE + j) = 2; // pp[i][j] = 2;
     }
 }
 
 Usamem Version 3:
-for (k = 0; k < BSIZE / SMALL; k++)
-{
-    for (i = 0; i < N; i++)
-    {
-        for (j = 0; j < SMALL; j++)
-        {
+for (k = 0; k < BSIZE / SMALL; k++) {
+    for (i = 0; i < N; i++) {
+        for (j = 0; j < SMALL; j++) {
             *(pp + i * BSIZE + (SMALL * k + j)) = 2; // pp[i][SMALL*k+j] = 2;
         }
     }
 }
+
+===================================================
 
 1. Tiempos de Ejecucion:
     Version 2:
@@ -36,12 +33,20 @@ for (k = 0; k < BSIZE / SMALL; k++)
         real    0m9,499s
         user    0m9,136s
         sys     0m0,320s
+
 ===================================================
 2. 
-    -> La cache TLB (lookaside buffer) es un buffer de traduccion anticipada de direcciones virtuales a fisicas en la cual se almacenan pocas direcciones (las utlizadas recientemente) para reducir el tiempo de busqueda de la direccion fisica en la tabla de pagina del proceso.
+    ->  La cache TLB (Translation Look-aside Buffer) es un buffer de traduccion anticipada de direcciones virtuales a fisicas en la cual se almacenan pocas direcciones (las utlizadas recientemente) para reducir el tiempo de busqueda de la direccion fisica en la tabla de pagina del proceso que se encuentra en la memoria (lo cual es muy lenta en comparacion al buffer).
+        Para lograr esto, la TLB usa un hardware aparte llamado CAM (ContentAddressable Memory), el cual al recibir una direccion de memoria virtual busca en un arreglo de valores en paralelo en muy poco tiempo de reloj la direccion del marco previamente almacenado en la cache. 
+        Si el valor buscado no es encontrado por la CAM, entonces se genera un TLB Miss, y por lo tanto se tiene que buscar en memoria la direccion del marco para la pagina solicitada directamente en la memoria.
 
-    -> La cache del procesador son un conjunto de buffers con una velocidad de lectura muy superior a la de la memoria RAM, pero con una capacidad de almacenamiento muy reducida en la cual se almacenan los datos consultados a la RAM para una rapido acceso futuro
+    ->  La cache del procesador son un conjunto de buffers con una velocidad de lectura muy superior a la de la memoria RAM, pero con una capacidad de almacenamiento muy reducida en la cual se almacenan los datos consultados a la RAM para una rapido acceso futuro. En total los procesadores tienen 3 caches (L1, L2, L3).
+        L1 tiene aproximadamente una velocidad de 1150 GB/s y la latencia en tan solo 0,9 ns, pero con solo 256 KB de tamaño. Esta cache es una por nucleo, pero se divide en dos, una L1 para datos y otra para instrucciones.
+        L2 tiene aproximadamente una velocidad de 470 GB/s y 2,8 ns de latencia, con un tamaño que suele variar entre 256 KB y los 18 MB. Esta al, igual que la L1, es una por nucleo.
+        L3 tiene aproximadamente una velocidad de 200 GB/s y 11 ns de latencia, con un tamaño de 4 MB a 64 MB. Esta a diferencia de las anteriores, es una unica cache y es compartida entre los nucleos repartida normalmente en unos 2 MB por cada uno.
+
 ===================================================
+
 3.
     Performance counter stats for './usamem':
         1.037.298.342      dTLB-store-misses                                           
@@ -59,9 +64,11 @@ for (k = 0; k < BSIZE / SMALL; k++)
         10,617876177 seconds time elapsed
     
     1. La version original es la version que tiene un peor rendimiento, esto se debe a que al tener mas fallos de cache y TLB, el procesador debe consultar mas veces a la memoria (la cual es mucho mas lentas que las cache) tanto informacion solicitada por el proceso como las TP para las traducciones de direcciones logicas a fisicas.
-    2. El mejor rendimiento lo tiene la version 1, ya que el accede a todas las posiciones de memoria de una misma pagina una sola vez, osea que un for recorre por completo una pagina (ya cargada en la cache) y el for mas de arriba recorre cada pagina. En cambio, la version 1, recorre de a pedacitos cada pagina, haciendo que tenga que pedir a memoria muchas veces informacion para la misma pagina.
-    3. La de mejor rendimiento recorre una pagina por completo cada vez que quiere acceder a una, mientras que la de rendimiento medio "divide" en 4 cada pagina y termina accediendo a ella 4 veces, en vez de la millonada cantidad de veces de la de menor rendimiento.
+    2. El mejor rendimiento lo tiene la version 2, ya que el accede a todas las posiciones de memoria de una misma pagina una sola vez, osea que un for recorre por completo una pagina (ya cargada en la TLB) y el for mas de arriba recorre cada pagina. En cambio, la version 1, recorre de a pedacitos cada pagina, haciendo que tenga que pedir a memoria muchas veces informacion para la misma pagina.
+    3.  La de mejor rendimiento recorre una pagina por completo cada vez que quiere acceder a una, logrando asi acceder una sola vez en total a cada pagina.
+        La de rendimiento medio recorre 4 bytes por pagina y pasa a la siguiente, accediendo un total de 1024 veces a cada pagina.
+        Y la de peor rendiemiento (la version 1) accede un byte por pagina, por lo tanto termina accediendo 4096 veces.
 
-    Aclaracion: la cantidad de veces que se accede a la misma pagina reduce el rendimiento ya que al ser tanta cantidad de paginas las que se tienen que abrir hasta poder volver a abrir la misma hace que la cache se llene de paginas, y cuando quiere volver a abrir la misma pagina esta ya no se encuentra en la cache por falta de espacio.
+    Aclaracion: la cantidad de veces que se accede a la misma pagina reduce el rendimiento ya que al ser tanta cantidad de paginas las que se tienen que abrir hasta poder volver a abrir la misma hace que la cache de la TLB se llene de paginas, y cuando quiere volver a abrir la misma pagina esta ya no se encuentra en la cache por falta de espacio.
 
     Google Sheet con el diagrama de recorrido: https://docs.google.com/spreadsheets/d/1VYmWbhIz09DNTQqcqUkwBGMqJX0M5TFIgCl5bZOrq_4/edit?usp=sharing
